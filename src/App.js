@@ -179,16 +179,86 @@ function CustomerDetails({ selected }) {
   );
 }
 
+function Profile({ setSubmittedData }) {
+  const [userID, setUserID] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); // prevent the default form submission behavior
+    setSubmittedData({
+      UserID: userID,
+      Password: password,
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label
+            htmlFor="userID"
+            className="block text-sm font-medium text-gray-700"
+          >
+            UserID
+          </label>
+          <input
+            type="text"
+            id="userID"
+            value={userID}
+            onChange={(e) => setUserID(e.target.value)}
+            className="mt-1 p-2 w-full border rounded-md"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 p-2 w-full border rounded-md"
+          />
+        </div>
+        <div>
+          <button
+            type="submit"
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function ProfileData({ submittedData }) {
+  return (
+    <div className="mt-4">
+      <h3 className="text-lg font-semibold">Submitted Data:</h3>
+      <pre className="bg-gray-100 p-4 rounded-md">
+        {JSON.stringify(submittedData, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
 export default function App() {
-  const [selectedTab, setSelectedTab] = useState("home");
+  const [selectedTab, setSelectedTab] = useState("Home");
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [submittedData, setSubmittedData] = useState(null);
 
   return (
     <div className="flex h-screen">
       {/* Left Section */}
       <div className="w-1/4 bg-gray-200 h-full border-r">
         <ul className="space-y-2 p-4">
-          {["home", "profile", "messages", "settings"].map((tab) => (
+          {["Home", "Profile", "Messages", "Settings"].map((tab) => (
             <li
               key={tab}
               className="cursor-pointer p-2 hover:bg-gray-300 block text-center"
@@ -202,14 +272,22 @@ export default function App() {
 
       {/* Middle Section */}
       <div className="w-1/4 bg-gray-100 h-full border-r p-4 overflow-y-auto">
-        {selectedTab === "home" && (
+        {selectedTab === "Home" && (
           <TreeStructure onSelect={setSelectedLocation} />
+        )}
+        {selectedTab === "Profile" && (
+          <Profile setSubmittedData={setSubmittedData} />
         )}
       </div>
 
       {/* Right Section */}
       <div className="w-1/2 bg-gray-50 p-4 h-full overflow-y-auto">
-        <CustomerDetails selected={selectedLocation} />
+        {selectedTab === "Home" && (
+          <CustomerDetails selected={selectedLocation} />
+        )}
+        {selectedTab === "Profile" && (
+          <ProfileData submittedData={submittedData} />
+        )}
       </div>
     </div>
   );
